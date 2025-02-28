@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light" data-lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown SNBP 2025</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #4361ee;
+      --secondary: #3a0ca3;
+      --accent: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #38b000;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Background Gradient & Animasi */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(270deg, #f0f2f5, #e2e8f0);
+      background-size: 400% 400%;
+      animation: gradientBackground 15s ease infinite;
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+      padding-top: 60px; /* ruang untuk navbar */
+    }
+    @keyframes gradientBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    body[data-theme="dark"] {
+      background: #121212;
+    }
+    body[data-theme="dark"] .countdown-container,
+    body[data-theme="dark"] .info-container {
+      background-color: #1e1e1e;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    body[data-theme="dark"] .countdown-value {
+      background-color: #2d2d2d;
+      color: #4cc9f0;
+    }
+    body[data-theme="dark"] .info-card {
+      background-color: #2d2d2d;
+    }
+    body[data-theme="dark"] .info-card p,
+    body[data-theme="dark"] .countdown-subtitle,
+    body[data-theme="dark"] .motivational-quote {
+      color: #adb5bd;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    /* Navbar untuk kontrol tombol */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      z-index: 1100;
+    }
+    .navbar button {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .navbar button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 1.5rem 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: clamp(0.9rem, 3vw, 1.2rem);
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+    .countdown-container {
+      background: white;
+      border-radius: 1rem;
+      padding: clamp(1rem, 5vw, 2rem);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .countdown-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .countdown-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .countdown-title {
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .countdown-subtitle {
+      color: #6c757d;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      transition: color 0.3s;
+    }
+    .countdown-display {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: clamp(0.5rem, 3vw, 1.5rem);
+      margin-bottom: 2rem;
+    }
+    .countdown-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: clamp(70px, 20vw, 120px);
+      flex: 1;
+    }
+    .countdown-value {
+      font-size: clamp(1.8rem, 6vw, 3.5rem);
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      background: #f8f9fa;
+      border-radius: 0.5rem;
+      width: 100%;
+      padding: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .countdown-value::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1s ease-in-out;
+    }
+    .countdown-box.pulse .countdown-value::after {
+      transform: scaleX(1);
+    }
+    .countdown-label {
+      font-size: clamp(0.75rem, 2.5vw, 1rem);
+      margin-top: 0.5rem;
+      color: var(--dark);
+      font-weight: 500;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .progress-container {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    .progress-container h3 {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      margin-bottom: 0.5rem;
+    }
+    .progress-bar {
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 5px;
+      transition: width 1s ease;
+      width: 0%;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+    .message-container {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background-color: #f8f9fa;
+      display: none;
+      transition: background-color 0.3s;
+    }
+    .message-text {
+      font-size: clamp(0.9rem, 3vw, 1.2rem);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    .info-container {
+      background: white;
+      border-radius: 1rem;
+      padding: clamp(1rem, 5vw, 2rem);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .info-title {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      color: var(--primary);
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+    .info-title::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 50px;
+      height: 3px;
+      background: var(--accent);
+    }
+    .info-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .info-card {
+      background-color: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--primary);
+      transition: transform 0.3s ease, background-color 0.3s;
+    }
+    .info-card:hover {
+      transform: translateY(-5px);
+    }
+    .info-card h3 {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+    .info-card p {
+      color: #6c757d;
+      line-height: 1.6;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      transition: color 0.3s;
+    }
+    footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .footer-text {
+      opacity: 0.8;
+      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+      padding: 0 1rem;
+    }
+    .motivational-quote {
+      font-style: italic;
+      text-align: center;
+      max-width: 600px;
+      margin: 2rem auto;
+      color: #6c757d;
+      position: relative;
+      padding: 0 clamp(1rem, 5vw, 2rem);
+      font-size: clamp(0.9rem, 3vw, 1rem);
+      line-height: 1.6;
+      transition: color 0.3s;
+    }
+    .motivational-quote::before,
+    .motivational-quote::after {
+      content: '"';
+      font-size: clamp(2rem, 6vw, 3rem);
+      position: absolute;
+      color: var(--primary);
+      opacity: 0.2;
+    }
+    .motivational-quote::before {
+      top: -1rem;
+      left: 0;
+    }
+    .motivational-quote::after {
+      bottom: -2rem;
+      right: 0;
+    }
+    .quote-author {
+      font-weight: 500;
+      margin-top: 0.5rem;
+      display: block;
+    }
+    .share-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    #share-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    #share-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    
+    /* Modal Time Capsule */
+    #timeCapsuleModal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      z-index: 2000;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .navbar button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: clamp(1.2rem, 5vw, 1.8rem); }
+      .subtitle { font-size: clamp(0.8rem, 4vw, 1rem); padding: 0 0.5rem; }
+      .countdown-title { font-size: clamp(1.2rem, 5vw, 1.6rem); }
+      .countdown-subtitle { font-size: clamp(0.75rem, 4vw, 0.9rem); }
+      .countdown-value { font-size: clamp(1.5rem, 5vw, 2.5rem); padding: 0.3rem; }
+      .countdown-label { font-size: clamp(0.7rem, 4vw, 0.9rem); }
+      .progress-container h3, .message-text { font-size: clamp(0.9rem, 4vw, 1rem); }
+      .info-title { font-size: clamp(1rem, 5vw, 1.2rem); }
+      .info-card h3 { font-size: clamp(0.9rem, 4vw, 1rem); }
+      .info-card p { font-size: clamp(0.8rem, 4vw, 0.9rem); }
+    }
+    @media (max-width: 320px) {
+      h1 { font-size: 1rem; }
+      .subtitle { font-size: 0.7rem; }
+      .countdown-container { padding: 0.5rem; }
+      .countdown-value { font-size: 1rem; padding: 0.3rem; }
+      .countdown-label { font-size: 0.6rem; }
+      .progress-container h3, .progress-label, .message-text { font-size: 0.8rem; }
+      .info-title { font-size: 0.8rem; }
+      .info-card h3 { font-size: 0.7rem; }
+      .info-card p { font-size: 0.6rem; }
+      .footer-text { font-size: 0.6rem; }
+      .motivational-quote { font-size: 0.7rem; padding: 0 0.5rem; }
+    }
+    
+    .confetti {
+      position: fixed;
+      top: -10%;
+      opacity: 0.8;
+      z-index: 1000;
+      pointer-events: none;
+      transform: rotate(0deg);
+      border-radius: 2px;
+    }
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(110vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <!-- Navbar sebagai control-buttons -->
+  <nav class="navbar">
+    <button class="theme-toggle">🌓</button>
+    <button class="lang-toggle">ID/EN</button>
+    <button class="music-toggle">🔊</button>
+    <button class="capsule-toggle">Time Capsule</button>
+  </nav>
+  
+  <!-- Audio Background Music -->
+  <audio id="bgMusic" src="https://www.bensound.com/bensound-music/bensound-creativeminds.mp3" loop></audio>
+  
+  <!-- Modal Time Capsule -->
+  <div id="timeCapsuleModal">
+    <h2>Time Capsule</h2>
+    <textarea id="capsuleText" placeholder="Tulis pesan Anda..." style="width:100%; height:100px; margin-top:0.5rem; padding:0.5rem; border:1px solid #ccc; border-radius:0.5rem;"></textarea>
+    <br>
+    <button id="saveCapsule" style="margin-top:1rem; padding:0.5rem 1rem; border:none; background:var(--accent); color:white; border-radius:0.5rem; cursor:pointer;">Simpan Pesan</button>
+    <button id="closeCapsule" style="margin-top:1rem; margin-left:0.5rem; padding:0.5rem 1rem; border:none; background:#ccc; color:#000; border-radius:0.5rem; cursor:pointer;">Tutup</button>
+  </div>
+  
+  <header>
+    <div class="container">
+      <h1 id="header-title">Hasil SNBP 2025</h1>
+      <p class="subtitle" id="header-subtitle">Countdown menuju pengumuman hasil Seleksi Nasional Berdasarkan Prestasi</p>
+    </div>
+  </header>
+  <br>
+  
+  <main class="container">
+    <div class="countdown-container">
+      <div class="countdown-header">
+        <h2 class="countdown-title" id="countdown-title">Pengumuman SNBP 2025</h2>
+        <p class="countdown-subtitle" id="countdown-subtitle">18 Maret 2025, Pukul 15:00 WIB</p>
+      </div>
+      <div class="countdown-display">
+        <div class="countdown-box">
+          <div class="countdown-value" id="days">00</div>
+          <div class="countdown-label" id="days-label">Hari</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-value" id="hours">00</div>
+          <div class="countdown-label" id="hours-label">Jam</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-value" id="minutes">00</div>
+          <div class="countdown-label" id="minutes-label">Menit</div>
+        </div>
+        <div class="countdown-box">
+          <div class="countdown-value" id="seconds">00</div>
+          <div class="countdown-label" id="seconds-label">Detik</div>
+        </div>
+      </div>
+      <div class="progress-container">
+        <h3 id="progress-title" class="countdown-title">Progress Menuju Pengumuman</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-label">
+          <span>0%</span>
+          <span id="progress-percentage">0%</span>
+          <span>100%</span>
+        </div>
+      </div>
+      <div class="message-container" id="countdown-message">
+        <p class="message-text" id="message-text"></p>
+      </div>
+    </div>
+    <div class="share-container">
+      <button id="share-btn">Share Countdown</button>
+    </div>
+    <div class="motivational-quote pulse-animation" id="motivational-quote">
+      <!-- Konten motivasi akan diupdate oleh JavaScript -->
+    </div>
+    <div class="info-container">
+      <h2 class="info-title" id="info-title">Informasi Penting</h2>
+      <div class="info-content">
+        <div class="info-card">
+          <h3 id="info1-title">Hasil SNBP</h3>
+          <p id="info1-content"></p>
+        </div>
+        <div class="info-card">
+          <h3 id="info2-title">Persiapan Pengumuman</h3>
+          <p id="info2-content"></p>
+        </div>
+        <div class="info-card">
+          <h3 id="info3-title">Langkah Selanjutnya</h3>
+          <p id="info3-content"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <p class="footer-text" id="footer-text">© 2025 Countdown SNBP. Dibuat untuk membantu siswa menanti hasil SNBP 2025.</p>
+    </div>
+  </footer>
+  
+  <script>
+    // Tetapkan target date dan start date
+    const targetDate = new Date(Date.UTC(2025, 2, 18, 8, 0, 0));
+    const startDate = new Date(Date.UTC(2025, 0, 1, 0, 0, 0));
+
+    // Ambil elemen DOM untuk countdown
+    const daysElement = document.getElementById('days');
+    const hoursElement = document.getElementById('hours');
+    const minutesElement = document.getElementById('minutes');
+    const secondsElement = document.getElementById('seconds');
+    const progressFill = document.getElementById('progress-fill');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const countdownMessage = document.getElementById('countdown-message');
+    const messageText = document.getElementById('message-text');
+
+    // Ambil elemen kontrol
+    const themeToggle = document.querySelector('.theme-toggle');
+    const langToggle = document.querySelector('.lang-toggle');
+    const musicToggle = document.querySelector('.music-toggle');
+    const capsuleToggle = document.querySelector('.capsule-toggle');
+    const body = document.body;
+    const shareBtn = document.getElementById('share-btn');
+
+    // Ambil elemen musik dan modal capsule
+    const bgMusic = document.getElementById('bgMusic');
+    const timeCapsuleModal = document.getElementById('timeCapsuleModal');
+    const saveCapsuleBtn = document.getElementById('saveCapsule');
+    const closeCapsuleBtn = document.getElementById('closeCapsule');
+    const capsuleText = document.getElementById('capsuleText');
+
+    // Data bahasa
+    const languageData = {
+      id: {
+        title: "Hasil SNBP 2025",
+        subtitle: "Countdown menuju pengumuman hasil Seleksi Nasional Berdasarkan Prestasi",
+        countdownTitle: "Pengumuman SNBP 2025",
+        countdownSubtitle: "18 Maret 2025, Pukul 15:00 WIB",
+        daysLabel: "Hari",
+        hoursLabel: "Jam",
+        minutesLabel: "Menit",
+        secondsLabel: "Detik",
+        progressTitle: "Progress Menuju Pengumuman",
+        announcementMessage: "Pengumuman SNBP 2025 telah tersedia! Silahkan cek hasil di laman resmi SNBP.",
+        weekMessage: "Pengumuman SNBP tinggal {days} hari lagi! Persiapkan diri Anda.",
+        dayMessage: "Pengumuman SNBP tinggal kurang dari 24 jam lagi!",
+        hourMessage: "Sebentar lagi! Pengumuman SNBP akan segera tersedia.",
+        motivationalQuote: "Masa depan adalah milik mereka yang percaya pada keindahan mimpi-mimpi mereka.",
+        quoteAuthor: "- Eleanor Roosevelt",
+        infoTitle: "Informasi Penting",
+        info1Title: "Hasil SNBP",
+        info1Content: "Hasil SNBP 2025 akan diumumkan melalui laman resmi SNBP yaitu snbp.kemdikbud.go.id pada tanggal 18 Maret 2025 pukul 15.00 WIB.",
+        info2Title: "Persiapan Pengumuman",
+        info2Content: "Pastikan Anda menyiapkan NISN dan tanggal lahir untuk melihat hasil pengumuman. Siapkan juga koneksi internet yang stabil.",
+        info3Title: "Langkah Selanjutnya",
+        info3Content: "Bagi yang diterima, persiapkan dokumen-dokumen yang dibutuhkan untuk proses registrasi ulang sesuai dengan ketentuan universitas masing-masing.",
+        footerText: "© 2025 Countdown SNBP. Dibuat untuk membantu siswa menanti hasil SNBP 2025."
+      },
+      en: {
+        title: "SNBP 2025 Results",
+        subtitle: "Countdown to the announcement of the National Selection Based on Achievement",
+        countdownTitle: "SNBP 2025 Announcement",
+        countdownSubtitle: "March 18, 2025, 15:00 WIB",
+        daysLabel: "Days",
+        hoursLabel: "Hours",
+        minutesLabel: "Minutes",
+        secondsLabel: "Seconds",
+        progressTitle: "Progress Towards Announcement",
+        announcementMessage: "SNBP 2025 results are now available! Please check the results on the official SNBP website.",
+        weekMessage: "SNBP announcement is only {days} days away! Prepare yourself.",
+        dayMessage: "SNBP announcement is less than 24 hours away!",
+        hourMessage: "Almost there! SNBP announcement will be available soon.",
+        motivationalQuote: "The future belongs to those who believe in the beauty of their dreams.",
+        quoteAuthor: "- Eleanor Roosevelt",
+        infoTitle: "Important Information",
+        info1Title: "SNBP Results",
+        info1Content: "The SNBP 2025 results will be announced on the official SNBP website snbp.kemdikbud.go.id on March 18, 2025 at 15:00 WIB.",
+        info2Title: "Announcement Preparation",
+        info2Content: "Make sure you have your NISN and date of birth ready to view the announcement. Also, ensure a stable internet connection.",
+        info3Title: "Next Steps",
+        info3Content: "For those accepted, prepare the documents required for re-registration according to each university's regulations.",
+        footerText: "© 2025 SNBP Countdown. Created to help students await the SNBP 2025 results."
+      }
+    };
+
+    let currentLanguage = 'id';
+    updateLanguage(currentLanguage);
+
+    function updateCountdown() {
+      const currentDate = new Date();
+      const currentOffset = currentDate.getTimezoneOffset();
+      const wibOffset = 420;
+      const wibTime = new Date(currentDate.getTime() + (wibOffset + currentOffset) * 60 * 1000);
+      const totalSeconds = Math.floor((targetDate - wibTime) / 1000);
+
+      if (totalSeconds <= 0) {
+        daysElement.innerText = '00';
+        hoursElement.innerText = '00';
+        minutesElement.innerText = '00';
+        secondsElement.innerText = '00';
+        progressFill.style.width = '100%';
+        progressPercentage.innerText = '100%';
+        countdownMessage.style.display = 'block';
+        countdownMessage.style.backgroundColor = '#d1e7dd';
+        messageText.innerText = languageData[currentLanguage].announcementMessage;
+        createConfetti();
+        return;
+      }
+
+      const days = Math.floor(totalSeconds / (60 * 60 * 24));
+      const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+      const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+      const seconds = Math.floor(totalSeconds % 60);
+
+      daysElement.innerText = days.toString().padStart(2, '0');
+      hoursElement.innerText = hours.toString().padStart(2, '0');
+      minutesElement.innerText = minutes.toString().padStart(2, '0');
+      secondsElement.innerText = seconds.toString().padStart(2, '0');
+
+      const totalDuration = targetDate - startDate;
+      const elapsed = wibTime - startDate;
+      const progress = Math.min(100, Math.max(0, Math.floor((elapsed / totalDuration) * 100)));
+      progressFill.style.width = ${progress}%;
+      progressPercentage.innerText = ${progress}%;
+
+      if (totalSeconds <= 60 * 60 * 24 * 7 && totalSeconds > 60 * 60 * 24) {
+        countdownMessage.style.display = 'block';
+        countdownMessage.style.backgroundColor = '#fff3cd';
+        messageText.innerText = languageData[currentLanguage].weekMessage.replace('{days}', days);
+      } else if (totalSeconds <= 60 * 60 * 24 && totalSeconds > 60 * 60) {
+        countdownMessage.style.display = 'block';
+        countdownMessage.style.backgroundColor = '#cff4fc';
+        messageText.innerText = languageData[currentLanguage].dayMessage;
+      } else if (totalSeconds <= 60 * 60 && totalSeconds > 0) {
+        countdownMessage.style.display = 'block';
+        countdownMessage.style.backgroundColor = '#f8d7da';
+        messageText.innerText = languageData[currentLanguage].hourMessage;
+      }
+
+      addPulseEffect(seconds, secondsElement.parentElement);
+      if (seconds === 59) addPulseEffect(minutes, minutesElement.parentElement);
+      if (minutes === 59 && seconds === 59) addPulseEffect(hours, hoursElement.parentElement);
+      if (hours === 23 && minutes === 59 && seconds === 59) addPulseEffect(days, daysElement.parentElement);
+    }
+
+    function addPulseEffect(value, element) {
+      element.classList.add('pulse');
+      setTimeout(() => {
+        element.classList.remove('pulse');
+      }, 1000);
+    }
+
+    function createConfetti() {
+      const container = document.body;
+      const confettiColors = ['#f72585', '#4361ee', '#4cc9f0', '#3a0ca3', '#7209b7'];
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          confetti.style.width = (Math.random() * 10 + 5) + 'px';
+          confetti.style.height = (Math.random() * 10 + 5) + 'px';
+          confetti.style.animation = confetti-fall ${Math.random() * 3 + 2}s linear forwards;
+          container.appendChild(confetti);
+          setTimeout(() => { confetti.remove(); }, 5000);
+        }, i * 100);
+      }
+    }
+
+    function toggleTheme() {
+      if (body.getAttribute('data-theme') === 'light') {
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.innerText = '🌞';
+      } else {
+        body.setAttribute('data-theme', 'light');
+        themeToggle.innerText = '🌙';
+      }
+    }
+
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'id' ? 'en' : 'id';
+      updateLanguage(currentLanguage);
+      langToggle.innerText = currentLanguage === 'id' ? '🇮🇩' : '🇺🇸';
+    }
+
+    function updateLanguage(lang) {
+      const data = languageData[lang];
+      document.querySelector('h1').innerText = data.title;
+      document.querySelector('.subtitle').innerText = data.subtitle;
+      document.querySelector('.countdown-title').innerText = data.countdownTitle;
+      document.querySelector('.countdown-subtitle').innerText = data.countdownSubtitle;
+      document.querySelectorAll('.countdown-label')[0].innerText = data.daysLabel;
+      document.querySelectorAll('.countdown-label')[1].innerText = data.hoursLabel;
+      document.querySelectorAll('.countdown-label')[2].innerText = data.minutesLabel;
+      document.querySelectorAll('.countdown-label')[3].innerText = data.secondsLabel;
+      document.querySelector('.progress-container h3').innerText = data.progressTitle;
+      document.querySelector('.footer-text').innerText = data.footerText;
+      document.getElementById('motivational-quote').innerHTML = data.motivationalQuote +
+        '<span class="quote-author" id="quote-author">' + data.quoteAuthor + '</span>';
+      document.getElementById('info-title').innerText = data.infoTitle;
+      document.getElementById('info1-title').innerText = data.info1Title;
+      document.getElementById('info1-content').innerText = data.info1Content;
+      document.getElementById('info2-title').innerText = data.info2Title;
+      document.getElementById('info2-content').innerText = data.info2Content;
+      document.getElementById('info3-title').innerText = data.info3Title;
+      document.getElementById('info3-content').innerText = data.info3Content;
+    }
+
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicToggle.innerText = "🔊";
+      } else {
+        bgMusic.pause();
+        musicToggle.innerText = "🔇";
+      }
+    }
+
+    function toggleCapsule() {
+      // Ubah modal Time Capsule menggunakan style display dan tampilkan dengan animasi sederhana
+      if (timeCapsuleModal.style.display === "none" || timeCapsuleModal.style.display === "") {
+        timeCapsuleModal.style.display = "block";
+      } else {
+        timeCapsuleModal.style.display = "none";
+      }
+    }
+
+    shareBtn.addEventListener('click', async () => {
+      const shareData = {
+        title: document.title,
+        text: "Cek countdown SNBP 2025!",
+        url: window.location.href
+      };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          console.log("Berhasil share!");
+        } catch (err) {
+          console.error("Gagal share:", err);
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(shareData.url);
+          alert("Link telah disalin ke clipboard!");
+        } catch (err) {
+          alert("Fitur share tidak didukung, dan gagal menyalin link.");
+        }
+      }
+    });
+
+    themeToggle.addEventListener('click', toggleTheme);
+    langToggle.addEventListener('click', toggleLanguage);
+    musicToggle.addEventListener('click', toggleMusic);
+    capsuleToggle.addEventListener('click', toggleCapsule);
+
+    // Event listener untuk modal Time Capsule
+    saveCapsuleBtn.addEventListener('click', () => {
+      const msg = capsuleText.value.trim();
+      if (msg) {
+        let messages = JSON.parse(localStorage.getItem('timeCapsuleMessages')) || [];
+        messages.push({ message: msg, timestamp: new Date().toLocaleString() });
+        localStorage.setItem('timeCapsuleMessages', JSON.stringify(messages));
+        capsuleText.value = "";
+        alert("Pesan telah disimpan di Time Capsule!");
+      }
+    });
+    closeCapsuleBtn.addEventListener('click', () => {
+      timeCapsuleModal.style.display = "none";
+    });
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
